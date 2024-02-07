@@ -1,21 +1,28 @@
-import "./App.css";
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import "./App.css";
 
 function App() {
   const [products, setProducts] = useState([]);
+
+  const instance = axios.create({
+    baseURL: "https://fakestoreapi.com/products",
+    timeout: 1000,
+    headers: { "Secret-Custom-Header": "token" },
+  });
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("https://fakestoreapi.com/products/");
+    instance
+      .get()
+      .then(function (response) {
+        // handle successsetProducts(json)
         setProducts(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error fetching product data:", error);
-      }
-    };
-    fetchData();
+        console.log(response);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
   }, []);
   return (
     <div>
@@ -23,6 +30,7 @@ function App() {
         <div key={product.id}>
           <p>{product.title}</p>
           <p>{product.price}$</p>
+          <img src={product.image} alt={product.title} />
         </div>
       ))}
     </div>
